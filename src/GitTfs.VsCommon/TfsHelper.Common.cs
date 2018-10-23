@@ -720,9 +720,12 @@ namespace GitTfs.VsCommon
             }
         }
 
+        protected abstract Workspace CreateWorkSpace(string workSpaceName);
+
         private Workspace GetWorkspace(params WorkingFolder[] folders)
-        {
-            var workspace = VersionControl.CreateWorkspace(GenerateWorkspaceName());
+        {            
+            var workspace = CreateWorkSpace(GenerateWorkspaceName());
+            //var workspace = VersionControl.CreateWorkspace(GenerateWorkspaceName());
             try
             {
                 SetWorkspaceMappingFolders(workspace, folders);
@@ -741,8 +744,9 @@ namespace GitTfs.VsCommon
                     throw new GitTfsException(e.Message).WithRecommendation("Run 'git tfs cleanup-workspaces' to remove the workspace.");
                 }
             }
-            catch
+            catch(Exception ex)
             {
+                System.Diagnostics.Debug.WriteLine(ex);
                 TryToDeleteWorkspace(workspace);
                 throw;
             }
